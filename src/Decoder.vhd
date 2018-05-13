@@ -33,14 +33,11 @@ end Decoder;
 architecture Behavioral of Decoder is
 
 signal sclk :STD_LOGIC_VECTOR(19 downto 0);	
-signal detectDigit : std_logic := '0';
+signal detectDigit : std_logic_vector(3 downto 0) := "0000";
 begin
 	process(Clk)
 		begin 
 		if rising_edge(Clk) then
-			if detectDigit = '1' then 
-				detectDigit <= '0';
-			end if;
 			-- 1ms
 			if sclk = "00011000011010100000" then 
 				--C1
@@ -51,19 +48,21 @@ begin
 				--R1
 				if Row = "0111" then
 					DecodeOut <= "0001";	--1	 
-					detectDigit <= '1';
+					detectDigit(0) <= '1';
 				--R2
 				elsif Row = "1011" then
 					DecodeOut <= "0100"; --4 
-					detectDigit <= '1';
+					detectDigit(0) <= '1';
 				--R3
 				elsif Row = "1101" then
 					DecodeOut <= "0111"; --7
-					detectDigit <= '1';
+					detectDigit(0) <= '1';
 				--R4
 				elsif Row = "1110" then
 					DecodeOut <= "0000"; --0 
-					detectDigit <= '1';
+					detectDigit(0) <= '1';
+				else
+					detectDigit(0) <= '0';
 				end if;
 				sclk <= sclk+1;
 			-- 2ms
@@ -76,19 +75,21 @@ begin
 				--R1
 				if Row = "0111" then		
 					DecodeOut <= "0010"; --2
-					detectDigit <= '1';
+					detectDigit(1) <= '1';
 				--R2
 				elsif Row = "1011" then
 					DecodeOut <= "0101"; --5
-					detectDigit <= '1';
+					detectDigit(1) <= '1';
 				--R3
 				elsif Row = "1101" then
 					DecodeOut <= "1000"; --8
-					detectDigit <= '1';
+					detectDigit(1) <= '1';
 				--R4
 				elsif Row = "1110" then
 					DecodeOut <= "1111"; --F
-					detectDigit <= '1';
+					detectDigit(1) <= '1';
+				else
+					detectDigit(1) <= '0';
 				end if;
 				sclk <= sclk+1;	
 			--3ms
@@ -101,19 +102,21 @@ begin
 				--R1
 				if Row = "0111" then
 					DecodeOut <= "0011"; --3
-					detectDigit <= '1';
+					detectDigit(2) <= '1';
 				--R2
 				elsif Row = "1011" then
 					DecodeOut <= "0110"; --6
-					detectDigit <= '1';
+					detectDigit(2) <= '1';
 				--R3
 				elsif Row = "1101" then
 					DecodeOut <= "1001"; --9
-					detectDigit <= '1';
+					detectDigit(2) <= '1';
 				--R4
 				elsif Row = "1110" then
 					DecodeOut <= "1110"; --E
-					detectDigit <= '1';
+					detectDigit(2) <= '1'; 
+				else
+					detectDigit(2) <= '0';
 				end if;
 				sclk <= sclk+1;
 			--4ms
@@ -126,19 +129,21 @@ begin
 				--R1
 				if Row = "0111" then
 					DecodeOut <= "1010"; --A
-					detectDigit <= '1';
+					detectDigit(3) <= '1';
 				--R2
 				elsif Row = "1011" then
 					DecodeOut <= "1011"; --B
-					detectDigit <= '1';
+					detectDigit(3) <= '1';
 				--R3
 				elsif Row = "1101" then
 					DecodeOut <= "1100"; --C
-					detectDigit <= '1';
+					detectDigit(3) <= '1';
 				--R4
 				elsif Row = "1110" then
 					DecodeOut <= "1101"; --D
-					detectDigit <= '1';
+					detectDigit(3) <= '1';
+				else 
+					detectDigit(3) <= '0';
 				end if;
 				sclk <= "00000000000000000000";	
 			else
@@ -147,7 +152,7 @@ begin
 		end if;
 	end process;
 		
-	DigitRead <= detectDigit;	
+	DigitRead <= detectDigit(0) or detectDigit(1) or detectDigit(2) or detectDigit(3);	
 						 
 end Behavioral;
 

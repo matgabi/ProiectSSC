@@ -138,7 +138,7 @@ begin
 	port map(
 		Clk => Clk,
 		Rst => Rst,
-		Data => Result,
+		Data => DispOut,
 		An => An,
 		Seg => Seg
 	);

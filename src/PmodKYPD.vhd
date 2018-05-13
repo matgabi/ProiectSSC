@@ -26,6 +26,7 @@ entity PmodKYPD is
 	LoadX: in std_logic;
 	LoadY: in std_logic;
 	Operation: in std_logic;
+	MuxSel : in std_logic_vector(2 downto 0);
 	
 	JA : inout  STD_LOGIC_VECTOR (7 downto 0); -- PmodKYPD is designed to be connected to JA
  	An : out  STD_LOGIC_VECTOR (7 downto 0);   -- Controls which position of the seven segment display to display
@@ -49,7 +50,11 @@ signal DigitSelect : std_logic_vector(2 downto 0) := (others => '0');
 signal X : std_logic_vector(31 downto 0) := (others => '0');
 signal Y : std_logic_vector(31 downto 0) := (others => '0');
 
+
+
 signal Result : std_logic_vector(31 downto 0) := (others => '0');
+
+signal DispOut: std_logic_vector(31 downto 0) := (others => '0');
 begin
 	dec : entity WORK.decoder
 	port map(
@@ -121,6 +126,13 @@ begin
 		DepasireInf => DepasireInf,
 		Ready => Ready
 	);
+	
+	with MuxSel select DispOut <= Result when "000",
+	TmpOperand when "001",
+	X when "010",
+	Y when "011",
+	'0' & DigitSelect & x"0" & "000" & DigitRead & x"0" & "000" & DigitReadDebounced & x"00" & Decode when "100",
+	x"FFFF0000" when others;
 	
 	dsp : entity WORK.displ7seg
 	port map(
